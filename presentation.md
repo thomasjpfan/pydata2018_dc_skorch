@@ -706,8 +706,8 @@ freezer = Freezer('conv*')
 
 ### Nuclei Image Segmentation - PatchedDataset
 
-![original left](md_images/seg_reflect.jpg)
-![original right](md_images/seg_patch.jpg)
+![original left](md_images/seg_reflect.png)
+![original right](md_images/seg_patch.png)
 
 ---
 
@@ -892,7 +892,7 @@ print(val_prob_masks.shape)
 
 ---
 
-![inline fit](md_images/prediction_seg.jpg)
+![inline fit](md_images/prediction_seg.png)
 
 ---
 
@@ -910,7 +910,7 @@ print(val_prob_masks.shape)
 
 ![inline](md_images/skorch-logo.png)
 
-- [Presentation notebooks](https://github.com/thomasjpfan/pydata2018_dc_skorch)
+- [This presentation notebooks](https://github.com/thomasjpfan/pydata2018_dc_skorch)
 - [skorch Tutorials](https://skorch.readthedocs.io/en/latest/user/tutorials.html)
 - [skorch.readthedocs.io](https://skorch.readthedocs.io/)
 - [github.com/dnouri/skorch](https://github.com/dnouri/skorch)
