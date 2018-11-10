@@ -910,6 +910,7 @@ print(val_prob_masks.shape)
 
 ![inline](md_images/skorch-logo.png)
 
+- [Presentation notebooks](https://github.com/thomasjpfan/pydata2018_dc_skorch)
 - [skorch Tutorials](https://skorch.readthedocs.io/en/latest/user/tutorials.html)
 - [skorch.readthedocs.io](https://skorch.readthedocs.io/)
 - [github.com/dnouri/skorch](https://github.com/dnouri/skorch)
