@@ -465,14 +465,10 @@ freezer = Freezer(lambda x: not x.startswith("model_ft.fc"))
 
 # Ants and Bees - Learning Rate Scheduler
 
-![fit right](md_images/step_lr.png)
+![fit inline](md_images/step_lr.png)
 
 ```python
-lr_scheduler = LRScheduler(
-    policy="StepLR",
-    step_size=7,
-    gamma=0.1
-)
+lr_scheduler = LRScheduler(policy="StepLR", step_size=7, gamma=0.1)
 ```
 
 ---
@@ -583,7 +579,6 @@ _ = net.partial_fit(train_ds)
 [.code-highlight: 4-8,12]
 [.code-highlight: 3,11]
 
-
 ```python
 from skorch.callbacks import LoadInitState
 
@@ -657,10 +652,10 @@ print(X_numpy.shape)
 
 X_pred = net.predict(X_numpy)
 print(X_pred)
-# [[-0.44090486  0.1810616 ]]
+# [[ 0.4966519, -0.9894746]]
 
-print(np.exp(X_pred)/(1+np.exp(X_pred)))
-# [[0.3915254, 0.5451421]]
+print(softmax(X_pred))
+# [[0.8154962  0.18450384]]
 ```
 
 ---
