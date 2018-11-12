@@ -95,8 +95,6 @@ with torch.set_grad_enabled(False):
 
 # PyTorch Training - The Rest
 
-[.build-lists: true]
-
 - Recording validation losses
 - Print metrics out
 - Save the best performing model
@@ -104,8 +102,6 @@ with torch.set_grad_enabled(False):
 - Etc.
 
 ---
-
-[.build-lists: true]
 
 ![100%, inline](md_images/skorch-logo.png)
 
