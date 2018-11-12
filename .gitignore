@@ -1,3 +1,7 @@
 data/stage1_train.zip
 data/hymenoptera_data.zip
+data/hymenoptera_data
+data/cells
 .ipynb_checkpoints
+images/
+exp_*
