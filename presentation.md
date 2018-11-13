@@ -27,7 +27,7 @@ clf = SGDClassifier(alpha=0.01)
 
 clf.fit(X, y)
 
-y_pred = clf.predict(X, y)
+y_pred = clf.predict(X)
 
 clf.partial_fit(X, y)
 
@@ -48,7 +48,7 @@ clf.set_params(alpha=0.1)
 [.code-highlight: 6-9]
 
 ```python
-for epoch in range(epochs):
+for epoch in range(10):
     net.train()
     for inputs, labels in train_loader:
         optimizer.zero_grad()
@@ -105,9 +105,9 @@ with torch.set_grad_enabled(False):
 
 ![100%, inline](md_images/skorch-logo.png)
 
-- Scikit-Learn compatible neural network library that wraps PyTorch.
-- Abstracts away the training loop.
-- Reduces the amount of boilerplate code with callbacks.
+1. Scikit-Learn compatible neural network library that wraps PyTorch.
+2. Abstracts away the training loop.
+3. Reduces the amount of boilerplate code with callbacks.
 
 ---
 
@@ -117,7 +117,7 @@ with torch.set_grad_enabled(False):
 
 1. MNIST
 2. Ants and Bees
-3. Kaggle Data Science Bowl 2018
+3. Kaggle 2018 Data Science Bowl
 
 ---
 
@@ -149,6 +149,10 @@ X_train, X_test, y_train, y_test = train_test_split(
 
 # MNIST - Neutral Network Module
 
+[.code-highlight: all]
+[.code-highlight: 1,3,5]
+[.code-highlight: 4,6-10]
+
 ```python
 from torch.nn as nn
 
@@ -168,8 +172,6 @@ class SimpleFeedforward(nn.Module):
 ![fit right](md_images/SimpleNeutralNet.png)
 
 ---
-
-# MNIST - Loss function
 
 ![inline](md_images/MNIST_loss.png)
 
@@ -242,7 +244,7 @@ net.history[-2:, 'train_loss']
 
 [.code-highlight: all]
 [.code-highlight: 1-4]
-[.code-highlight: 6]
+[.code-highlight: 1,6]
 
 ```python
 from sklearn.metrics import accuracy_score, make_scorer
@@ -257,7 +259,13 @@ accuracy_argmax_scorer = make_scorer(accuracy_argmax)
 
 # MNIST - EpochScoring
 
+[.code-highlight: all]
+[.code-highlight: 1-6]
+[.code-highlight: 8-10]
+
 ```python
+from skorch.callbacks import EpochScoring
+
 epoch_acc = EpochScoring(
     accuracy_argmax_scorer,
     name='valid_acc',
@@ -312,8 +320,6 @@ pipe = Pipeline([
     ("min_max", MinMaxScaler()),
     ("net", net)])
 
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.25, random_state=42)
 _ = pipe.fit(X_train, y_train)
 ```
 
@@ -434,7 +440,7 @@ K. He, X. Zhang, S. Ren, and J. Sun. Deep residual learning for image recognitio
 # Ants and Bees - ResNet Model Code
 
 [.code-highlight: all]
-[.code-highlight: 7-9]
+[.code-highlight: 5, 7-9]
 
 ```python
 from torchvision.models import resnet18
@@ -467,19 +473,33 @@ freezer = Freezer(lambda x: not x.startswith("model_ft.fc"))
 
 # Ants and Bees - Learning Rate Scheduler
 
-![fit inline](md_images/step_lr.png)
+![fit right](md_images/step_lr.png)
 
 ```python
-lr_scheduler = LRScheduler(policy="StepLR", step_size=7, gamma=0.1)
+from skorch.callbacks import (
+    LRScheduler
+)
+
+lr_scheduler = LRScheduler(
+    policy="StepLR",
+    step_size=7,
+    gamma=0.1)
 ```
 
 ---
 
 # Ants and Bees - Checkpoints
 
+[.code-highlight: all]
+[.code-highlight: 1,4-8]
+[.code-highlight: 2,10-11]
+
 ```python
 from skorch.callbacks import Checkpoint
 from skorch.callbacks import TrainEndCheckpoint
+
+epoch_acc = EpochScoring(..., name='valid_acc',
+    lower_is_better=False)
 
 checkpoint = Checkpoint(
     dirname="exp_01_bee_vs_ant", monitor="valid_acc_best")
@@ -493,13 +513,12 @@ train_end_cp = TrainEndCheckpoint(
 # Ants and Bees - Skorch NeuralNet
 
 [.code-highlight: all]
-[.code-highlight: 1,8-9]
-[.code-highlight: 3,10]
-[.code-highlight: 11-12]
+[.code-highlight: 10-11]
+[.code-highlight: 1,7-8]
+[.code-highlight: 2,9]
 
 ```python
 import torch.optim as optim
-from skorch import NeuralNet
 from skorch.helper import predefined_split
 
 net = NeuralNet(
@@ -671,19 +690,6 @@ print(softmax(X_pred))
 
 ---
 
-# Nuclei Image Segmentation - Dataset
-
-```python
-train_cell_ds = CellsDataset(train_dirs)
-valid_cell_ds = CellsDataset(valid_dirs)
-
-print(train_cell_ds[0])
-# (<PIL.Image.Image>
-#  <PIL.PngImagePlugin.PngImageFile>)
-```
-
----
-
 [.text: text-scale(0.5)]
 
 ![inline](md_images/UNet.png)
@@ -697,6 +703,19 @@ O. Ronneberger, P. Fischer, and T. Brox, “U-net: Convolutional networks for bi
 ```python
 from skorch.callbacks import Freezer
 freezer = Freezer('conv*')
+```
+
+---
+
+# Nuclei Image Segmentation - Dataset
+
+```python
+train_cell_ds = CellsDataset(train_dirs)
+valid_cell_ds = CellsDataset(valid_dirs)
+
+print(train_cell_ds[0])
+# (<PIL.Image.Image>
+#  <PIL.PngImagePlugin.PngImageFile>)
 ```
 
 ---
@@ -735,13 +754,11 @@ val_ds = PatchedDataset(
 # Nuclei Image Segmentation - IOU Metric
 
 [.code-highlight: all]
-[.code-highlight: 4-7]
-[.code-highlight: 1,2,9-11]
+[.code-highlight: 1-4]
+[.code-highlight: 6-8]
+[.code-highlight: 10-11]
 
 ```python
-from skorch.callbacks import EpochScoring
-from sklearn.metrics import make_scorer
-
 def approximate_iou_metric(
         true_masks, predicted_logit_masks, padding=16):
     ...
@@ -750,18 +767,9 @@ def approximate_iou_metric(
 iou_scoring = make_scorer(approximate_iou_metric)
 iou_scoring = EpochScoring(
     iou_scoring, name='valid_iou', lower_is_better=False)
-```
-
----
-
-# Nuclei Image Segmentation - Checkpoint
-
-```python
-from skorch.callbacks import Checkpoint
 
 best_cp = Checkpoint(
-    dirname="kaggle_seg_exp01",
-    monitor="valid_iou_best")
+    dirname="kaggle_seg_exp01", monitor="valid_iou_best")
 ```
 
 ---
@@ -778,14 +786,15 @@ class BCEWithLogitsLossPadding(nn.Module):
         self.padding = padding
 
     def forward(self, input, target):
-        input = input.squeeze_(
-            dim=1)[:, self.padding:-self.padding,
-                      self.padding:-self.padding]
-        target = target.squeeze_(
-            dim=1)[:, self.padding:-self.padding,
-                      self.padding:-self.padding]
-
+        ...
         return binary_cross_entropy_with_logits(input, target)
+
+net = NeuralNet(
+    UNet,
+    criterion=BCEWithLogitsLossPadding,
+    criterion__padding=16,
+    ...
+)
 ```
 
 ---
@@ -820,7 +829,6 @@ cyclicLR = LRScheduler(
 # Nuclei Image Segmentation - NeuralNet
 
 [.code-highlight: all]
-[.code-highlight: 2-4]
 [.code-highlight: 8]
 
 ```python
@@ -840,12 +848,14 @@ net = NeuralNet(
 
 # Nuclei Image Segmentation - NeuralNet DataLoader
 
-PyTorch's `DataLoader(pin_memory=False, num_workers=0)`
+[.text: text-scale(0.8)]
+
+PyTorch's `DataLoader(pin_memory=False, num_workers=0, ...)`
 
 [.code-highlight: all]
 [.code-highlight: 2-4]
 [.code-highlight: 5-7]
-[.code-highlight: 8]
+[.code-highlight: 9]
 
 ```python
 net = NeutralNet(...,
@@ -855,6 +865,7 @@ net = NeutralNet(...,
     iterator_valid__shuffle=False,
     iterator_valid__num_workers=4,
     iterator_valid__pin_memory=True)
+
 _ = net.fit(train_ds)
 ```
 
@@ -893,13 +904,25 @@ print(val_prob_masks.shape)
 
 ---
 
-# Skorch - Closing
+# Skorch - Closing 1
 
-![inline](md_images/skorch-logo.png)
+1. Scikit-Learn compatible neural network library that wraps PyTorch.
+  - `net.fit(X, y)`
+  - `net.partial_fit(X, y)`
+  - `net.predict(X)`
+  - `net.set_params(...)`
+2. Abstracts away the training loop.
 
-- Scikit-Learn compatible neural network library that wraps PyTorch.
-- Abstracts away the training loop.
-- Reduces the amount of boilerplate code with callbacks.
+---
+
+# Skorch - Closing 2
+
+3. Reduces the amount of boilerplate code with callbacks.
+  - `EpochScoring`
+  - `Freezer`
+  - `Checkpoint`
+  - `LRScheduler`
+  - [skorch.readthedocs.io/en/stable/user/callbacks.html](https://skorch.readthedocs.io/en/latest/user/callbacks.html)
 
 ---
 
@@ -907,8 +930,7 @@ print(val_prob_masks.shape)
 
 ![inline](md_images/skorch-logo.png)
 
-- [This presentation notebooks](https://github.com/thomasjpfan/pydata2018_dc_skorch)
-- [skorch Tutorials](https://skorch.readthedocs.io/en/latest/user/tutorials.html)
 - [skorch.readthedocs.io](https://skorch.readthedocs.io/)
+- [skorch Tutorials](https://skorch.readthedocs.io/en/latest/user/tutorials.html)
 - [github.com/dnouri/skorch](https://github.com/dnouri/skorch)
-- [pytorch.org](https://pytorch.org)
+- [github.com/thomasjpfan/pydata2018\_dc\_skorch](https://github.com/thomasjpfan/pydata2018_dc_skorch)
