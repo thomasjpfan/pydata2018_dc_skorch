@@ -786,7 +786,7 @@ class BCEWithLogitsLossPadding(nn.Module):
         self.padding = padding
 
     def forward(self, input, target):
-        ...
+        ... # removes padding
         return binary_cross_entropy_with_logits(input, target)
 
 net = NeuralNet(
