@@ -148,8 +148,6 @@ print(X.shape, y.shape)
 # MNIST - Data Code
 
 [.code-highlight: all]
-[.code-highlight: 3-4]
-[.code-highlight: 1,6-9]
 
 ```python
 from sklearn.model_selection import train_test_split
@@ -515,8 +513,8 @@ checkpoint = Checkpoint(
 
 [.code-highlight: all]
 [.code-highlight: 10-11]
-[.code-highlight: 1,7-8]
 [.code-highlight: 2,9]
+[.code-highlight: 1,7-8]
 
 ```python
 import torch.optim as optim
@@ -761,7 +759,8 @@ best_cp = Checkpoint(
 # Nuclei Image Segmentation - Custom Loss
 
 [.code-highlight: all]
-[.code-highlight: 1-2,4,7-14]
+[.code-highlight: 11]
+[.code-highlight: 1-2,12-13]
 
 ```python
 class BCEWithLogitsLossPadding(nn.Module):
@@ -906,3 +905,17 @@ print(val_prob_masks.shape)
 - [skorch Tutorials](https://skorch.readthedocs.io/en/latest/user/tutorials.html)
 - [github.com/dnouri/skorch](https://github.com/dnouri/skorch)
 - [github.com/thomasjpfan/pydata2018\_dc\_skorch](https://github.com/thomasjpfan/pydata2018_dc_skorch)
+
+---
+
+# Appendix Nuclei Image Segmentation - Cyclic LR Scheduler
+
+- Number of training samples: `len(train_ds) = 1756`
+- `max_epochs = 20`
+- `batch_size = 32`
+- Training iterations per epoch: `ceil(1756/32) = 55`
+- Total number of iterations: `55*20 = 1100`
+
+![right fit](md_images/cyclic_lr.png)
+
+---
