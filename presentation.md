@@ -163,7 +163,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 # MNIST - Neural Network Module
 
 [.code-highlight: all]
-[.code-highlight: 1,3,5]
+[.code-highlight: 1,3,5,12]
 [.code-highlight: 4,6-10]
 
 ```python
