@@ -580,7 +580,7 @@ def run(max_epochs):
     best_cp = Checkpoint(dirname="exp_02", ...)
 
     train_end_cp = TrainEndCheckpoint(
-        dirname="exp_02", fn_prefix="train_end")
+        dirname="exp_02", fn_prefix="train_end_")
     load_state = LoadInitState(train_end_cp)
 
     net = NeuralNet(...,
