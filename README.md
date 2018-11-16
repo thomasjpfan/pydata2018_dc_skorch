@@ -4,6 +4,12 @@
 
 The slides can be downloaded at: [download link](https://github.com/thomasjpfan/pydata2018_dc_skorch/raw/master/slides.pdf).
 
+## To clone this repo run:
+
+```bash
+git clone --depth 1 https://github.com/thomasjpfan/pydata2018_dc_skorch
+```
+
 ## Setup
 
 To run the notebook locally, please following the following setup procedure:
