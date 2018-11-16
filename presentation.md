@@ -260,10 +260,10 @@ net.history[-2:, 'train_loss']
 [.code-highlight: 1,6]
 
 ```python
-from sklearn.metrics import accuracy_score, make_scorer
+from sklearn.metrics import make_scorer
 
 def accuracy_argmax(y_true, y_pred):
-    return accuracy_score(y_true, np.argmax(y_pred, -1))
+    return np.mean(y_true == np.argmax(y_pred, -1))
 
 accuracy_argmax_scorer = make_scorer(accuracy_argmax)
 ```
@@ -737,16 +737,15 @@ val_ds = PatchedDataset(
 
 [.code-highlight: all]
 [.code-highlight: 1-4]
-[.code-highlight: 6-8]
-[.code-highlight: 7-11]
+[.code-highlight: 6-7]
+[.code-highlight: 6-11]
 
 ```python
 def approximate_iou_metric(
         true_masks, predicted_logit_masks, padding=16):
-    ...
-    return np.mean(approx_intersect/approx_union)
-
+    ... # returns metric
 iou_scoring = make_scorer(approximate_iou_metric)
+
 iou_scoring = EpochScoring(
     iou_scoring, name='valid_iou', lower_is_better=False)
 
@@ -759,18 +758,15 @@ best_cp = Checkpoint(
 # Nuclei Image Segmentation - Custom Loss
 
 [.code-highlight: all]
-[.code-highlight: 11]
-[.code-highlight: 1-2,12-13]
+[.code-highlight: 8]
+[.code-highlight: 1-4,9-10]
 
 ```python
 class BCEWithLogitsLossPadding(nn.Module):
     def __init__(self, padding):
         super().__init__()
         self.padding = padding
-
-    def forward(self, input, target):
-        ... # removes padding
-        return binary_cross_entropy_with_logits(input, target)
+    ...
 
 net = NeuralNet(
     UNet,
@@ -850,15 +846,11 @@ _ = net.fit(train_ds)
 
 [.code-highlight: all]
 [.code-highlight: 1]
-[.code-highlight: 3-4]
-[.code-highlight: 6-8]
-[.code-highlight: 10-12]
+[.code-highlight: 3-5]
+[.code-highlight: 7-9]
 
 ```python
 net.load_params(checkpoint=best_cp)
-
-def num_staple_sigmod(x):
-    return np.exp(-np.logaddexp(0, -x))
 
 val_masks = net.predict(val_ds)
 print(val_masks.shape)
