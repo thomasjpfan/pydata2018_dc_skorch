@@ -7,6 +7,8 @@
 
 Thomas Fan
 
+[github.com/thomasjpfan/pydata2018\_dc\_skorch](https://github.com/thomasjpfan/pydata2018_dc_skorch)
+
 ---
 
 ![inline](md_images/scikit-learn-logo.png)
@@ -43,9 +45,6 @@ clf.set_params(alpha=0.1)
 # PyTorch Training - Training
 
 [.code-highlight: all]
-[.code-highlight: 1-3]
-[.code-highlight: 4-5]
-[.code-highlight: 6-9]
 
 ```python
 for epoch in range(10):
@@ -64,7 +63,6 @@ for epoch in range(10):
 # PyTorch Training - Recording Metrics
 
 [.code-highlight: all]
-[.code-highlight: 1,3,6-8]
 
 ```python
 train_losses = []
@@ -96,10 +94,10 @@ with torch.set_grad_enabled(False):
 # PyTorch Training - The Rest
 
 - Recording validation losses
-- Print metrics out
 - Save the best performing model
 - Record other metrics
-- Etc.
+- Logging
+- ...
 
 ---
 
@@ -107,7 +105,22 @@ with torch.set_grad_enabled(False):
 
 1. Scikit-Learn compatible neural network library that wraps PyTorch.
 2. Abstracts away the training loop.
-3. Reduces the amount of boilerplate code with callbacks.
+3. Reduces the amount of boilerplate code.
+
+---
+
+# Skorch NeuralNet
+
+![100%, inline](md_images/skorch-logo.png)
+
+```python
+from skorch import NeuralNet
+
+net = NuetralNet(
+    module,
+    criterion=...,
+    callbacks=[...])
+```
 
 ---
 
@@ -117,13 +130,18 @@ with torch.set_grad_enabled(False):
 
 1. MNIST
 2. Ants and Bees
-3. Kaggle 2018 Data Science Bowl
+3. 2018 Kaggle Data Science Bowl
 
 ---
 
 # MNIST - Data
 
-![fit original](md_images/mnist_example.png)
+![100% inline](md_images/mnist_example.png)
+
+```python
+print(X.shape, y.shape)
+# (70000, 784) (70000,)
+```
 
 ---
 
@@ -136,9 +154,6 @@ with torch.set_grad_enabled(False):
 ```python
 from sklearn.model_selection import train_test_split
 
-print(X.shape, y.shape)
-# (70000, 784) (70000,)
-
 X_scaled = X / 255.0
 
 X_train, X_test, y_train, y_test = train_test_split(
@@ -147,7 +162,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 
 ---
 
-# MNIST - Neutral Network Module
+# MNIST - Neural Network Module
 
 [.code-highlight: all]
 [.code-highlight: 1,3,5]
@@ -291,14 +306,9 @@ _ = net.fit(X, y)
 # MNIST - Prediction
 
 [.code-highlight: all]
-[.code-highlight: 1-4]
-[.code-highlight: 5-7]
 
 ```python
 y_pred = net.predict(X_test)
-
-print("shape:", y_pred.shape)
-# shape: (17500, 10)
 
 print('test accuracy:', accuracy_argmax(y_test, y_pred))
 # test accuracy: 0.9634857142857143
@@ -328,15 +338,13 @@ _ = pipe.fit(X_train, y_train)
 # MNIST - Grid Search
 
 [.code-highlight: all]
-[.code-highlight: 3]
-[.code-highlight: 1, 4-8]
-[.code-highlight: 9-10]
-[.code-highlight: 12-13]
+[.code-highlight: 1-7]
+[.code-highlight: 8-9]
+[.code-highlight: 11-12]
 
 ```python
 from sklearn.model_selection import GridSearchCV
 
-pipe.set_params(net__verbose=0)
 param_grid = {"net__module__dropout": [0.2, 0.5, 0.8]}
 
 gs = GridSearchCV(pipe, param_grid, cv=3,
@@ -440,18 +448,17 @@ K. He, X. Zhang, S. Ren, and J. Sun. Deep residual learning for image recognitio
 # Ants and Bees - ResNet Model Code
 
 [.code-highlight: all]
-[.code-highlight: 5, 7-9]
+[.code-highlight: 7-8]
 
 ```python
 from torchvision.models import resnet18
 import torch.nn as nn
 
 class PretrainedModel(nn.Module):
-    def __init__(self, pretrained=True):
+    def __init__(self):
         super().__init__()
-        self.model_ft = resnet18(pretrained=pretrained)
-        num_ftrs = self.model_ft.fc.in_features
-        self.model_ft.fc = nn.Linear(num_ftrs, 2)
+        self.model_ft = resnet18(pretrained=True)
+        self.model_ft.fc = nn.Linear(512, 2)
 
     def forward(self, X):
         return self.model_ft(X)
@@ -491,21 +498,15 @@ lr_scheduler = LRScheduler(
 # Ants and Bees - Checkpoints
 
 [.code-highlight: all]
-[.code-highlight: 1,4-8]
-[.code-highlight: 2,10-11]
 
 ```python
 from skorch.callbacks import Checkpoint
-from skorch.callbacks import TrainEndCheckpoint
 
 epoch_acc = EpochScoring(..., name='valid_acc',
     lower_is_better=False)
 
 checkpoint = Checkpoint(
     dirname="exp_01_bee_vs_ant", monitor="valid_acc_best")
-
-train_end_cp = TrainEndCheckpoint(
-    dirname="exp_01_bee_vs_ant", fn_prefix="train_end_")
 ```
 
 ---
@@ -528,7 +529,7 @@ net = NeuralNet(
     optimizer__momentum=0.9,
     train_split=predefined_split(val_ds),
     callbacks=[freezer, lr_scheduler,
-        epoch_acc, checkpoint, train_end_cp],
+        epoch_acc, checkpoint],
     ...
 )
 ```
@@ -545,75 +546,63 @@ _ = net.fit(train_ds)
 
 ---
 
-# Ants and Bees - Checkpoint Files
+# Ants and Bees - Checkpoint Loading
+
+**Checkpoint Files**
 
 ```bash
 exp_01_bee_vs_ant
 ├── history.json
 ├── optimizer.pt
-├── params.pt
-├── train_end_history.json
-├── train_end_optimizer.pt
-└── train_end_params.pt
+└── params.pt
 ```
 
----
-
-# Ants and Bees - Checkpoint Loading
-
-[.code-highlight: all]
-[.code-highlight: 1]
-[.code-highlight: 3-5]
+**Loading from Checkpoint**
 
 ```python
 net.load_params(checkpoint=checkpoint)
 
 val_output = net.predict(val_ds)
-print(val_output.shape)
-# (153, 2)
 ```
-
----
-
-# Ants and Bees - Continue Training
-
-[.code-highlight: all]
-[.code-highlight: 1]
-[.code-highlight: 2]
-[.code-highlight: 3]
-
-```python
-net.load_params(checkpoint=train_end_cp)
-net.set_params(max_epochs=5)
-_ = net.partial_fit(train_ds)
-```
-
-![inline](md_images/ants_vs_bees_continue_training.png)
 
 ---
 
 # Ants and Bees - Saving and Loading
 
 [.code-highlight: all]
-[.code-highlight: 4-7]
-[.code-highlight: 1,8]
-[.code-highlight: 4-8,12]
-[.code-highlight: 3,11]
+[.code-highlight: 5]
+[.code-highlight: 1-2,7-9]
+[.code-highlight: 11-14]
 
 ```python
+from skorch.callbacks import TrainEndCheckpoint
 from skorch.callbacks import LoadInitState
 
 def run(max_epochs):
-    best_cp = Checkpoint(
-        dirname="exp_02", monitor="valid_acc_best")
+    best_cp = Checkpoint(dirname="exp_02", ...)
+
     train_end_cp = TrainEndCheckpoint(
-        dirname="exp_02", fn_prefix="train_end_")
+        dirname="exp_02", fn_prefix="train_end")
     load_state = LoadInitState(train_end_cp)
 
     net = NeuralNet(...,
         max_epochs=max_epochs,
         callbacks=[..., best_cp, train_end_cp, load_state]
     ).fit(train_ds)
+```
+
+---
+
+# Ants and Bees - Saving and Loading Checkpoints
+
+```bash
+exp_02
+├── history.json
+├── optimizer.pt
+├── params.pt
+├── train_end_history.json
+├── train_end_optimizer.pt
+└── train_end_params.pt
 ```
 
 ---
@@ -654,8 +643,6 @@ net.initialize()
 net.load_params(checkpoint=checkpoint)
 
 val_pred = net.predict(val_ds)
-print(val_pred.shape)
-# (153, 2)
 ```
 
 ---
@@ -690,6 +677,19 @@ print(softmax(X_pred))
 
 ---
 
+# Nuclei Image Segmentation - Dataset
+
+```python
+train_cell_ds = CellsDataset(...)
+valid_cell_ds = CellsDataset(...)
+
+print(train_cell_ds[0])
+# (<PIL.Image.Image>
+#  <PIL.PngImagePlugin.PngImageFile>)
+```
+
+---
+
 [.text: text-scale(0.5)]
 
 ![inline](md_images/UNet.png)
@@ -707,18 +707,6 @@ freezer = Freezer('conv*')
 
 ---
 
-# Nuclei Image Segmentation - Dataset
-
-```python
-train_cell_ds = CellsDataset(train_dirs)
-valid_cell_ds = CellsDataset(valid_dirs)
-
-print(train_cell_ds[0])
-# (<PIL.Image.Image>
-#  <PIL.PngImagePlugin.PngImageFile>)
-```
-
----
 
 ### Nuclei Image Segmentation - PatchedDataset
 
@@ -728,10 +716,6 @@ print(train_cell_ds[0])
 ---
 
 # Nuclei Image Segmentation - PatchedDataset Code
-
-[.code-highlight: all]
-[.code-highlight: 1-3]
-[.code-highlight: 5-7]
 
 ```python
 train_ds = PatchedDataset(
@@ -756,7 +740,7 @@ val_ds = PatchedDataset(
 [.code-highlight: all]
 [.code-highlight: 1-4]
 [.code-highlight: 6-8]
-[.code-highlight: 10-11]
+[.code-highlight: 7-11]
 
 ```python
 def approximate_iou_metric(
@@ -777,11 +761,11 @@ best_cp = Checkpoint(
 # Nuclei Image Segmentation - Custom Loss
 
 [.code-highlight: all]
-[.code-highlight: 2,4,7-14]
+[.code-highlight: 1-2,4,7-14]
 
 ```python
 class BCEWithLogitsLossPadding(nn.Module):
-    def __init__(self, padding=16):
+    def __init__(self, padding):
         super().__init__()
         self.padding = padding
 
@@ -800,18 +784,6 @@ net = NeuralNet(
 ---
 
 # Nuclei Image Segmentation - Cyclic LR Scheduler
-
-- Number of training samples: `len(train_ds) = 1756`
-- `max_epochs = 20`
-- `batch_size = 32`
-- Training iterations per epoch: `ceil(1756/32) = 55`
-- Total number of iterations: `55*20 = 1100`
-
-![right fit](md_images/cyclic_lr.png)
-
----
-
-# Nuclei Image Segmentation - Cyclic LR Scheduler (Code)
 
 ```python
 cyclicLR = LRScheduler(
