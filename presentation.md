@@ -66,7 +66,7 @@ for epoch in range(10):
 
 ```python
 train_losses = []
-for epoch in range(epochs):
+for epoch in range(10):
     running_loss = 0.0
     for inputs, label in train_loader:
         ...
@@ -94,8 +94,8 @@ with torch.set_grad_enabled(False):
 # PyTorch Training - The Rest
 
 - Recording validation losses
-- Save the best performing model
-- Record other metrics
+- Saving the best performing model
+- Recording other metrics
 - Logging
 - ...
 
@@ -105,7 +105,7 @@ with torch.set_grad_enabled(False):
 
 1. Scikit-Learn compatible neural network library that wraps PyTorch.
 2. Abstracts away the training loop.
-3. Reduces the amount of boilerplate code.
+3. Reduces the amount of boilerplate code with callbacks.
 
 ---
 
@@ -164,7 +164,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 
 [.code-highlight: all]
 [.code-highlight: 1,3,5,12]
-[.code-highlight: 4,6-10]
+[.code-highlight: 3-4,6-10]
 
 ```python
 from torch.nn as nn
@@ -376,21 +376,12 @@ datasets/hymenoptera_data/
 
 # Ants and Bees - ImageFolder Init
 
-[.code-highlight: all]
-[.code-highlight: 1, 3-10]
-[.code-highlight: 2, 11-14]
-
 ```python
-import torchvision.transforms as tfms
 from torchvision.datasets import ImageFolder
 
-train_tfms = tfms.Compose([
-    tfms.RandomResizedCrop(224),
-    tfms.RandomHorizontalFlip(),
-    tfms.ToTensor(),
-    tfms.Normalize([0.485, 0.456, 0.406],
-                   [0.229, 0.224, 0.225])
-])
+train_tfms = ...
+val_tfms = ...
+
 train_ds = ImageFolder(
     "datasets/hymenoptera_data/train" , train_tfms)
 val_ds = ImageFolder(
@@ -423,6 +414,29 @@ print(train_ds.class_to_idx)
 
 ---
 
+# Ants and Bees - ImageFolder Transformations
+
+[.code-highlight: all]
+[.code-highlight: 1-9]
+
+```python
+import torchvision.transforms as tfms
+
+train_tfms = tfms.Compose([
+    tfms.RandomResizedCrop(224),
+    tfms.RandomHorizontalFlip(),
+    tfms.ToTensor(),
+    tfms.Normalize([0.485, 0.456, 0.406],
+                   [0.229, 0.224, 0.225])
+])
+
+train_ds = ImageFolder(
+    "datasets/hymenoptera_data/train" , train_tfms)
+
+```
+
+---
+
 # Ants and Bees - ImageNet
 
 - 1000 classes
@@ -445,7 +459,7 @@ K. He, X. Zhang, S. Ren, and J. Sun. Deep residual learning for image recognitio
 # Ants and Bees - ResNet Model Code
 
 [.code-highlight: all]
-[.code-highlight: 7-8]
+[.code-highlight: 1,7-8]
 
 ```python
 from torchvision.models import resnet18
@@ -454,8 +468,8 @@ import torch.nn as nn
 class PretrainedModel(nn.Module):
     def __init__(self):
         super().__init__()
-        self.model_ft = resnet18(pretrained=True)
-        self.model_ft.fc = nn.Linear(512, 2)
+        self.model = resnet18(pretrained=True)
+        self.model.fc = nn.Linear(512, 2)
 
     def forward(self, X):
         return self.model_ft(X)
@@ -470,7 +484,8 @@ class PretrainedModel(nn.Module):
 ```python
 from skorch.callbacks import Freezer
 
-freezer = Freezer(lambda x: not x.startswith("model_ft.fc"))
+freezer = Freezer(
+    lambda name: not name.startswith("model.fc"))
 ```
 
 ---
@@ -511,9 +526,8 @@ checkpoint = Checkpoint(
 # Ants and Bees - Skorch NeuralNet
 
 [.code-highlight: all]
-[.code-highlight: 10-11]
-[.code-highlight: 2,9]
-[.code-highlight: 1,7-8]
+[.code-highlight: 8-9]
+[.code-highlight: 2,7]
 
 ```python
 import torch.optim as optim
@@ -522,8 +536,6 @@ from skorch.helper import predefined_split
 net = NeuralNet(
     PretrainedModel,
     lr=0.001, batch_size=4,
-    optimizer=optim.SGD,
-    optimizer__momentum=0.9,
     train_split=predefined_split(val_ds),
     callbacks=[freezer, lr_scheduler,
         epoch_acc, checkpoint],
@@ -557,6 +569,7 @@ exp_01_bee_vs_ant
 **Loading from Checkpoint**
 
 ```python
+# net.fit(...) is called
 net.load_params(checkpoint=checkpoint)
 
 val_output = net.predict(val_ds)
@@ -564,76 +577,17 @@ val_output = net.predict(val_ds)
 
 ---
 
-# Ants and Bees - Saving and Loading
-
-[.code-highlight: all]
-[.code-highlight: 5]
-[.code-highlight: 1-2,7-9]
-[.code-highlight: 11-14]
-
-```python
-from skorch.callbacks import TrainEndCheckpoint
-from skorch.callbacks import LoadInitState
-
-def run(max_epochs):
-    best_cp = Checkpoint(dirname="exp_02", ...)
-
-    train_end_cp = TrainEndCheckpoint(
-        dirname="exp_02", fn_prefix="train_end_")
-    load_state = LoadInitState(train_end_cp)
-
-    net = NeuralNet(...,
-        max_epochs=max_epochs,
-        callbacks=[..., best_cp, train_end_cp, load_state]
-    ).fit(train_ds)
-```
-
----
-
-# Ants and Bees - Saving and Loading Checkpoints
-
-```bash
-exp_02
-├── history.json
-├── optimizer.pt
-├── params.pt
-├── train_end_history.json
-├── train_end_optimizer.pt
-└── train_end_params.pt
-```
-
----
-
-# Ants and Bees - Saving and Loading First Run
-
-```python
-run(max_epochs=10)
-```
-
-![inline](md_images/ants_vs_bees_first_fit.png)
-
----
-
-# Ants and Bees - Saving and Loading Second Run
-
-```python
-run(max_epochs=5)
-```
-
-![inline](md_images/ants_vs_bees_second_run.png)
-
----
-
 # Ants and Bees - Prediction
 
 [.code-highlight: all]
-[.code-highlight: 1-2]
-[.code-highlight: 4-6]
-[.code-highlight: 8-10]
+[.code-highlight: 1-3]
+[.code-highlight: 5-7]
+[.code-highlight: 9-11]
 
 ```python
-checkpoint = Checkpoint(
-    dirname="exp_02", monitor="valid_acc_best")
+checkpoint = Checkpoint(...,
+    dirname="exp_01_bee_vs_ant",
+    monitor="valid_acc_best")
 
 net = NeuralNet(PretrainedModel, ...)
 net.initialize()
@@ -757,8 +711,8 @@ best_cp = Checkpoint(
 # Nuclei Image Segmentation - Custom Loss
 
 [.code-highlight: all]
-[.code-highlight: 8]
 [.code-highlight: 1-4,9-10]
+[.code-highlight: 8]
 
 ```python
 class BCEWithLogitsLossPadding(nn.Module):
@@ -910,3 +864,61 @@ print(val_prob_masks.shape)
 ![right fit](md_images/cyclic_lr.png)
 
 ---
+
+# Appendix Ants and Bees - Saving and Loading
+
+[.code-highlight: all]
+[.code-highlight: 5]
+[.code-highlight: 1-2,7-9]
+[.code-highlight: 11-14]
+
+```python
+from skorch.callbacks import TrainEndCheckpoint
+from skorch.callbacks import LoadInitState
+
+def run(max_epochs):
+    best_cp = Checkpoint(dirname="exp_02", ...)
+
+    train_end_cp = TrainEndCheckpoint(
+        dirname="exp_02", fn_prefix="train_end_")
+    load_state = LoadInitState(train_end_cp)
+
+    net = NeuralNet(...,
+        max_epochs=max_epochs,
+        callbacks=[..., best_cp, train_end_cp, load_state]
+    ).fit(train_ds)
+```
+
+---
+
+# Appendix Ants and Bees - Saving and Loading Checkpoints
+
+```bash
+exp_02
+├── history.json
+├── optimizer.pt
+├── params.pt
+├── train_end_history.json
+├── train_end_optimizer.pt
+└── train_end_params.pt
+```
+
+---
+
+# Appendix Ants and Bees - Saving and Loading First Run
+
+```python
+run(max_epochs=10)
+```
+
+![inline](md_images/ants_vs_bees_first_fit.png)
+
+---
+
+# Appendix Ants and Bees - Saving and Loading Second Run
+
+```python
+run(max_epochs=5)
+```
+
+![inline](md_images/ants_vs_bees_second_run.png)

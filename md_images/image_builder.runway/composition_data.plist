@@ -484,8 +484,8 @@
 					dHgzMzYwXHR4MzkyMFx0eDQ0ODBcdHg1MDQw
 					XHR4NTYwMFx0eDYxNjBcdHg2NzIwXHBhcmRp
 					cm5hdHVyYWxccWNccGFydGlnaHRlbmZhY3Rv
-					cjAKClxmMFxmczMyIFxjZjIgTGluZWFyIC0+
-					IFJlbHUgLT4gRHJvcG91dH0=
+					cjAKClxmMFxmczMyIFxjZjIgXHVwMCBMaW5l
+					YXIgLT4gUmVsdSAtPiBEcm9wb3V0fQ==
 					</data>
 					<key>className</key>
 					<string>RoundRectangle</string>
@@ -1204,7 +1204,7 @@
 			<key>scaleImage</key>
 			<true/>
 			<key>scrollCenterPoint</key>
-			<string>{149.5, 159.5}</string>
+			<string>{150, 159.5}</string>
 			<key>stroke1Color</key>
 			<string></string>
 			<key>stroke1Enabled</key>
@@ -1859,10 +1859,9 @@
 					dHgzMzYwXHR4MzkyMFx0eDQ0ODBcdHg1MDQw
 					XHR4NTYwMFx0eDYxNjBcdHg2NzIwXHBhcmRp
 					cm5hdHVyYWxccWNccGFydGlnaHRlbmZhY3Rv
-					cjAKClxmMFxmczM4IFxjZjIgXHVwMCBcc2hh
-					ZFxzaGFkeDQwXHNoYWR5LTQwXHNoYWRyNjBc
-					c2hhZG84NSBcc2hhZGMyIE5lZyBMb2cgTG9z
-					c30=
+					cjAKClxmMFxmczM4IFxjZjIgXHNoYWRcc2hh
+					ZHg0MFxzaGFkeS00MFxzaGFkcjYwXHNoYWRv
+					ODUgXHNoYWRjMiBOZWcgTG9nIExvc3N9
 					</data>
 					<key>className</key>
 					<string>ResizeText</string>
@@ -2088,10 +2087,9 @@
 					dHgzMzYwXHR4MzkyMFx0eDQ0ODBcdHg1MDQw
 					XHR4NTYwMFx0eDYxNjBcdHg2NzIwXHBhcmRp
 					cm5hdHVyYWxccWNccGFydGlnaHRlbmZhY3Rv
-					cjAKClxmMFxmczUwIFxjZjIgXHVwMCBcc2hh
-					ZFxzaGFkeDQwXHNoYWR5LTQwXHNoYWRyNjBc
-					c2hhZG84NSBcc2hhZGMyIC1sb2coMC44MDkp
-					fQ==
+					cjAKClxmMFxmczUwIFxjZjIgXHNoYWRcc2hh
+					ZHg0MFxzaGFkeS00MFxzaGFkcjYwXHNoYWRv
+					ODUgXHNoYWRjMiAtbG9nKDAuODA5KX0=
 					</data>
 					<key>className</key>
 					<string>ResizeText</string>
@@ -2891,7 +2889,7 @@
 			<key>scaleImage</key>
 			<true/>
 			<key>scrollCenterPoint</key>
-			<string>{279.66666666666663, 169.66666666666669}</string>
+			<string>{280, 169.66666666666669}</string>
 			<key>stroke1Color</key>
 			<string></string>
 			<key>stroke1Enabled</key>
@@ -4772,7 +4770,7 @@
 			<key>scaleImage</key>
 			<true/>
 			<key>scrollCenterPoint</key>
-			<string>{369.66666666666663, 99.666666666666686}</string>
+			<string>{370, 99.666666666666686}</string>
 			<key>stroke1Color</key>
 			<string></string>
 			<key>stroke1Enabled</key>
@@ -8344,7 +8342,7 @@
 					XHR4NTYwMFx0eDYxNjBcdHg2NzIwXHBhcmRp
 					cm5hdHVyYWxccWNccGFydGlnaHRlbmZhY3Rv
 					cjAKClxmMFxmczMyIFxjZjIgXHVwMCBPdXRw
-					dXRcCjMgeCAyODhcc3VwZXIgMn0=
+					dXRcCjEgeCAyODhcc3VwZXIgMn0=
 					</data>
 					<key>className</key>
 					<string>Rectangle</string>
@@ -14931,7 +14929,7 @@
 					XHR4NTYwMFx0eDYxNjBcdHg2NzIwXHBhcmRp
 					cm5hdHVyYWxccWNccGFydGlnaHRlbmZhY3Rv
 					cjAKClxmMFxmczMyIFxjZjIgXHVwMCBPdXRw
-					dXRcCjMgeCAyODhcc3VwZXIgMn0=
+					dXRcCjEgeCAyODhcc3VwZXIgMn0=
 					</data>
 					<key>className</key>
 					<string>Rectangle</string>
