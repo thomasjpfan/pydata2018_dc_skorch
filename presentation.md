@@ -526,11 +526,10 @@ checkpoint = Checkpoint(
 # Ants and Bees - Skorch NeuralNet
 
 [.code-highlight: all]
-[.code-highlight: 8-9]
-[.code-highlight: 2,7]
+[.code-highlight: 7-8]
+[.code-highlight: 1,6]
 
 ```python
-import torch.optim as optim
 from skorch.helper import predefined_split
 
 net = NeuralNet(
