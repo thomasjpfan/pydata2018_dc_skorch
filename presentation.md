@@ -749,7 +749,7 @@ cyclicLR = LRScheduler(
 # Nuclei Image Segmentation - NeuralNet
 
 [.code-highlight: all]
-[.code-highlight: 8]
+[.code-highlight: 5-8]
 
 ```python
 net = NeuralNet(
@@ -778,7 +778,7 @@ PyTorch's `DataLoader(pin_memory=False, num_workers=0, ...)`
 [.code-highlight: 9]
 
 ```python
-net = NeutralNet(...,
+net = NeuralNet(...,
     iterator_train__shuffle=True,
     iterator_train__num_workers=4,
     iterator_train__pin_memory=True,
