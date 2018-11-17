@@ -472,7 +472,7 @@ class PretrainedModel(nn.Module):
         self.model.fc = nn.Linear(512, 2)
 
     def forward(self, X):
-        return self.model_ft(X)
+        return self.model(X)
 ```
 
 ---
@@ -555,9 +555,7 @@ _ = net.fit(train_ds)
 
 ---
 
-# Ants and Bees - Checkpoint Loading
-
-**Checkpoint Files**
+# Ants and Bees - Checkpoint Files
 
 ```bash
 exp_01_bee_vs_ant
@@ -566,10 +564,12 @@ exp_01_bee_vs_ant
 └── params.pt
 ```
 
-**Loading from Checkpoint**
+---
+
+# Ants and Bees - Loading from Checkpoint
 
 ```python
-# net.fit(...) is called
+# net.fit(...) was called
 net.load_params(checkpoint=checkpoint)
 
 val_output = net.predict(val_ds)
