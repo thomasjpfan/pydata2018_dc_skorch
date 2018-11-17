@@ -152,7 +152,7 @@ print(X.shape, y.shape)
 ```python
 from sklearn.model_selection import train_test_split
 
-X_scaled = X / 255.0
+X_scaled = X / X.max()
 
 X_train, X_test, y_train, y_test = train_test_split(
     X_scaled, y, test_size=0.25, random_state=42)
@@ -256,7 +256,7 @@ net.history[-2:, 'train_loss']
 # MNIST - Accuracy Score
 
 [.code-highlight: all]
-[.code-highlight: 1-4]
+[.code-highlight: 3-4]
 [.code-highlight: 1,6]
 
 ```python
@@ -337,8 +337,7 @@ _ = pipe.fit(X_train, y_train)
 
 [.code-highlight: all]
 [.code-highlight: 1-7]
-[.code-highlight: 8-9]
-[.code-highlight: 11-12]
+[.code-highlight: 8-12]
 
 ```python
 from sklearn.model_selection import GridSearchCV
