@@ -1,5 +1,7 @@
 # PyData DC 2018
 
+[Skorch](https://github.com/dnouri/skorch) - A Union of Scikit-learn and PyTorch
+
 ## Presentation
 
 The slides can be downloaded at: [download link](https://github.com/thomasjpfan/pydata2018_dc_skorch/raw/master/slides.pdf).
